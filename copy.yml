@@ -1,0 +1,25 @@
+---
+- hosts: g2
+  gather_facts: no
+  vars_files: training_task.yml
+  become: yes
+  tasks:
+    - name: "copy from host"
+      block: 
+      - fetch:
+         src: "{{item.path}}"
+         dest: "{{dest}}"
+         backup: yes
+        register: fetch_out
+        loop: "{{ hypervisor_files }}"
+      - copy:
+          src: "{{item.dest}}"
+          dest: "{{item.dest}}_backup"
+          backup: yes
+        delegate_to: localhost     
+        register: backup_out
+        loop: "{{fetch_out.results}}"
+      rescue:
+       - debug:
+           msg:
+             - "{{ ansible_failed_task.name }}" 
