@@ -1,0 +1,29 @@
+---     
+    - name: check the path
+      stat:
+        path: "{{item.path}}"
+      register: stat_result
+      
+    - name: copy the file
+      fetch:
+        src: "{{item.path}}"
+        dest: "{{dest}}"
+        backup: yes
+      register: fetch_out
+      when: stat_result.stat.exists and stat_result.stat.isdir == false 
+      
+    - name: collect info about the file
+      shell: " find {{item.path}} -maxdepth 1 -type f"
+      register: files
+      when: stat_result.stat.exists and stat_result.stat.isdir 
+      
+    - name: copy the dir
+      fetch:
+        src: "{{files.stdout_lines[item-1]}}"
+        dest: "{{dest}}"
+        backup: yes
+      register: dirfetch_out
+      loop: "{{range(files.stdout_lines|count|int)|list}}"
+      when: stat_result.stat.exists and stat_result.stat.isdir
+
+

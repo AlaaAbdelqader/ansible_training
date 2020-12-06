@@ -1,0 +1,29 @@
+---
+- hosts: hypervisor_files
+  gather_facts: no
+  vars_files: training_task.yml
+  become: yes
+  tasks:
+    - name: fetch from hypervisor
+      include_tasks: check_path.yml 
+      loop: "{{ hypervisor_files }}"
+      
+- hosts: undercloud_files
+  gather_facts: no
+  vars_files: training_task.yml
+  become: yes
+  tasks:
+    - name: fetch from undercloud
+      include_tasks: check_path.yml    
+      loop: "{{ undercloud_files }}"
+      
+    
+      
+- hosts: overcloud_files
+  gather_facts: no
+  vars_files: training_task.yml
+  become: yes
+  tasks:
+    - name: fetch from overcloud
+      include_tasks: check_path.yml
+      loop: "{{ overcloud_files }}"
