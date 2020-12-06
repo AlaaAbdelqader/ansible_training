@@ -1,5 +1,13 @@
 ---
+
  hypervisor_files:
   - {path: /home/ansadmin/alaa}
   - {path: /home/ansadmin/hello}
-
+  
+ undercloud_files:
+  - {path: /home/stack/templates/file, folder: files}
+  - {path: /home/stack/user/file}
+  
+ overcloud_files:
+  - {path: /home/example/}
+  - {path: /home/example/utils/}
