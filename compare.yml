@@ -1,0 +1,57 @@
+---
+- hosts: localhost
+  become: true
+  tasks:
+    - fail:
+        msg: "'first_run' and 'second_run' must be defined"
+      when: first_run is not defined or second_run is not defined
+        
+    - name: collect all files from two given directories
+      find:
+        paths: "{{ first_run }},{{ second_run }}"
+        recurse: yes
+      register: files_list
+      
+    - debug:
+       msg:
+         - "{{ first_run }}"
+         
+    - name: common part path
+      set_fact:      
+        files_list: |
+          {% set res = [] -%}
+          {% for file in files_list.files -%}
+              {% set ignored = res.extend([ file.path[first_run|length:] if file.path.startswith(first_run) else file.path[second_run|length:] ]) -%}
+          {%- endfor %}
+          {{ res | unique }}
+          
+    - name: Diff attributes
+      # Access, Context(selinux), Uid, Gid 
+      shell: "diff <( stat -c '%a %U %G %C' {{ '/'.join( [ first_run, item ] ) }} ) <( stat -c '%a %U %G %C' {{ '/'.join( [ second_run, item ] ) }} ); true"
+      args:
+        executable: /bin/bash
+      loop: "{{ files_list }}"
+      register: output
+      
+      
+    - name: Diff contents
+      shell: "diff {{ '/'.join( [ first_run, item ] ) }} {{ '/'.join( [ second_run, item ] ) }}; true"
+      loop: "{{ files_list }}"
+      register: contents
+      
+    - name: set attributes difference in result_attributes
+      set_fact:
+        attributesResult: "{{ attributesResult|default([]) + [{item.item: item.stdout_lines}] }}"
+      loop: "{{ output.results }}"  
+      
+    - name: set content difference in result_contents
+      set_fact:
+        contentsResult: "{{ contentsResult|default([]) + [{item.item: item.stdout_lines}] }}"
+      loop: "{{ contents.results }}"   
+      
+    - debug:
+        msg:
+         - "{{attributesResult}}"
+         - "{{contentsResult}}"
+      
+   
