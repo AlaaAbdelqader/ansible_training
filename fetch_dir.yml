@@ -1,0 +1,17 @@
+--- 
+    - name: copy the dir
+      fetch:
+        src: "{{files.stdout_lines[item-1]}}"
+        dest: "{{dest}}"  
+      register: dirfetch_out   
+         
+    - name: change attributes as remot host 
+      file:
+          path: "{{dirfetch_out.dest}}"
+          owner: "{{ olist[item-1]}}"
+          group: "{{ glist[item-1] }}"
+          mode:  "{{ mlist[item-1] }}"
+      delegate_to: 127.0.0.1
+      loop: "{{range(mlist|count|int)|list}}"
+ 
+      

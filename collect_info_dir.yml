@@ -1,0 +1,13 @@
+---
+    - name: collect info about the file
+      stat:
+        path: "{{files.stdout_lines[item-1]}}"
+      register: dir_state_result    
+
+    - name: set_fact of {{files.stdout_lines[item-1]}} in list   
+      set_fact:
+        mlist: "{{mlist|default([]) + [ dir_state_result.stat.mode ] }}"
+        glist: "{{glist|default([]) + [ dir_state_result.stat.gr_name ]}}"
+        olist: "{{olist|default([]) + [ dir_state_result.stat.pw_name ] }}"
+        
+        
