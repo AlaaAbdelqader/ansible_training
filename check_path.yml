@@ -8,7 +8,6 @@
       fetch:
         src: "{{item.path}}"
         dest: "{{dest}}"
-        backup: yes
       register: fetch_out
       when: stat_result.stat.exists and stat_result.stat.isdir == false 
       
@@ -21,7 +20,6 @@
       fetch:
         src: "{{files.stdout_lines[item-1]}}"
         dest: "{{dest}}"
-        backup: yes
       register: dirfetch_out
       loop: "{{range(files.stdout_lines|count|int)|list}}"
       when: stat_result.stat.exists and stat_result.stat.isdir
