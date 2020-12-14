@@ -12,6 +12,7 @@
           group: "{{ glist[item-1] }}"
           mode:  "{{ mlist[item-1] }}"
       delegate_to: 127.0.0.1
+      become: yes
       loop: "{{range(mlist|count|int)|list}}"
  
       
