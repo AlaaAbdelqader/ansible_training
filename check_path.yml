@@ -25,14 +25,14 @@
       when: stat_result.stat.exists and stat_result.stat.isdir == false 
  
   
-    - name: change attributes as remot host 
-      file:
-          path: "{{fetch_out.dest}}"
-          owner: "{{ u }}"
-          group: "{{ g }}"
-          mode:  "{{ m }}"
-      delegate_to: localhost
-      when: stat_result.stat.exists and stat_result.stat.isdir == false 
+#    - name: change attributes as remot host 
+#      file:
+#          path: "{{fetch_out.dest}}"
+#          owner: "{{ u }}"
+#          group: "{{ g }}"
+#          mode:  "{{ m }}"
+#      delegate_to: localhost
+#      when: stat_result.stat.exists and stat_result.stat.isdir == false 
  
     - name: collect all files
       shell: " find {{item.path}} -maxdepth 1 -type f"
